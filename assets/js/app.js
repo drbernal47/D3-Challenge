@@ -7,7 +7,7 @@ var svgHeight = 700;
 var margin = {
     top: 50,
     right: 50,
-    bottom: 50,
+    bottom: 100,
     left: 50
 };
 
@@ -77,4 +77,33 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
 
     chartGroup.append('g')
         .call(leftAxis);
+
+    // Append x-axis labels
+    var labelsGroup = chartGroup.append('g')
+        .attr('transform', `translate(${width / 2}, ${height + 20})`);
+    
+    var healthcareLabel = labelsGroup.append('text')
+        .attr('x', 0)
+        .attr('y', 20)
+        .attr('value', 'healthcare')
+        .classed('active', true)
+        .text('Healthcare');
+
+    var povertyLabel = labelsGroup.append('text')
+        .attr('x', 0)
+        .attr('y', 40)
+        .attr('value', 'poverty')
+        .classed('inactive', true)
+        .text('Poverty');
+
+    // Append y-axis labels
+    chartGroup.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', 0 - (height / 2))
+        .attr('y', 0 - margin.left)
+        .attr('dy', 'lem')
+        .classed('axis-left', true)
+        .text('Poverty');
+
+
 });
