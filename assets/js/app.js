@@ -81,6 +81,15 @@ function renderXCircles(circlesGroup, newXScale, chosenXAxis) {
     return circlesGroup;
 }
 
+// Function for updating circle text when x-axis changes
+function renderXCircleText(circlesText, newXScale, chosenXAxis) {
+    circlesText.transition()
+        .duration(1000)
+        .attr('x', d => newXScale(d[chosenXAxis]) - 10);
+
+    return circlesText;
+}
+
 // Function for updating circles when y-axis changes
 function renderYCircles(circlesGroup, newYScale, chosenYAxis) {
     circlesGroup.transition()
@@ -88,6 +97,15 @@ function renderYCircles(circlesGroup, newYScale, chosenYAxis) {
         .attr('cy', d => newYScale(d[chosenYAxis]));
 
     return circlesGroup;
+}
+
+// Function for updating circle text when y-axis changes
+function renderYCircleText(circlesText, newYScale, chosenYAxis) {
+    circlesText.transition()
+        .duration(1000)
+        .attr('y', d => newYScale(d[chosenYAxis]) +5);
+
+    return circlesText;
 }
 
 
@@ -186,8 +204,18 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
         .attr('cx', d => xLinearScale(d[chosenXAxis]))
         .attr('cy', d => yLinearScale(d[chosenYAxis]))
         .attr('r', 20)
-        .attr('fill', 'lightblue')
-        .attr('opacity', .7);
+        .attr('fill', 'slateblue')
+        .attr('opacity', .5);
+
+    var circlesText = chartGroup.selectAll('text').select('.circleText')
+        .data(medData)
+        .enter()    
+        .append('text')
+        .attr('x', d => xLinearScale(d[chosenXAxis]) - 10)
+        .attr('y', d => yLinearScale(d[chosenYAxis]) + 5)
+        .attr('fill', 'white')
+        .classed('circleText', true)
+        .text(d => d.abbr);
 
     // Event Handler for x-axis
     xLabelsGroup.selectAll('text')
@@ -199,6 +227,7 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
                 xLinearScale = xScale(medData, chosenXAxis);
                 xAxis = renderXAxis(xLinearScale, xAxis);
                 circlesGroup = renderXCircles(circlesGroup, xLinearScale, chosenXAxis);
+                circlesText = renderXCircleText(circlesText, xLinearScale, chosenXAxis);
 
                 if (chosenXAxis === 'age') {
                     ageLabel.classed('active', true)
@@ -237,6 +266,7 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
                 yLinearScale = yScale(medData, chosenYAxis);
                 yAxis = renderYAxis(yLinearScale, yAxis);
                 circlesGroup = renderYCircles(circlesGroup, yLinearScale, chosenYAxis);
+                circlesText = renderYCircleText(circlesText, yLinearScale, chosenYAxis);
 
                 if (chosenYAxis === 'healthcare') {
                     healthcareLabel.classed('active', true)
