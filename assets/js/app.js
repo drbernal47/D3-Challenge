@@ -8,7 +8,7 @@ var margin = {
     top: 50,
     right: 50,
     bottom: 100,
-    left: 50
+    left: 100
 };
 
 var width = svgWidth - margin.left - margin.right;
@@ -57,6 +57,12 @@ function xScale(medData, chosenXAxis) {
 d3.csv("assets/data/data.csv").then(function(medData, err) {
     if (err) throw err;
 
+    // Convert data to numerical
+    medData.forEach(data => {
+        data.healthcare = +data.healthcare;
+        data.poverty = +data.poverty;
+    });
+
     console.log(medData);
 
     // Determine axes
@@ -101,9 +107,21 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
         .attr('transform', 'rotate(-90)')
         .attr('x', 0 - (height / 2))
         .attr('y', 0 - margin.left)
-        .attr('dy', 'lem')
+        .attr('dy', '1em')
         .classed('axis-left', true)
         .text('Poverty');
+
+
+    // Append Circles of Data
+    var circlesGroup = chartGroup.selectAll('circle')
+        .data(medData)
+        .enter()
+        .append('circle')
+        .attr('cx', d => xLinearScale(d[chosenXAxis]))
+        .attr('cy', d => yLinearScale(d.poverty))
+        .attr('r', 20)
+        .attr('fill', 'lightblue')
+        .attr('opacity', .7);
 
 
 });
