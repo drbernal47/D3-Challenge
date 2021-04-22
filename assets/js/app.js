@@ -30,7 +30,7 @@ var chartGroup = svg.append("g")
 
 // Initialize parameters
 
-var chosenXAxis = "healthcare";
+var chosenXAxis = "age";
 
 // Function for updating x-axis
 function xScale(medData, chosenXAxis) {
@@ -42,25 +42,18 @@ function xScale(medData, chosenXAxis) {
 };
 
 
-// Function to draw the scatterplot with given parameters
-
-    // Create axes
-
-
-    // Create circles
-
-
-    // Create tooltips
-
-
 // Read in the data from the csv
 d3.csv("assets/data/data.csv").then(function(medData, err) {
     if (err) throw err;
 
     // Convert data to numerical
     medData.forEach(data => {
+        data.age = +data.age;
         data.healthcare = +data.healthcare;
+        data.income = +data.income;
+        data.obesity = +data.obesity;
         data.poverty = +data.poverty;
+        data.smokes = +data.smokes;
     });
 
     console.log(medData);
@@ -88,19 +81,26 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
     var labelsGroup = chartGroup.append('g')
         .attr('transform', `translate(${width / 2}, ${height + 20})`);
     
-    var healthcareLabel = labelsGroup.append('text')
+    var ageLabel = labelsGroup.append('text')
         .attr('x', 0)
         .attr('y', 20)
-        .attr('value', 'healthcare')
+        .attr('value', 'age')
         .classed('active', true)
-        .text('Healthcare');
+        .text('Median Age');
+
+    var incomeLabel = labelsGroup.append('text')
+        .attr('x', 0)
+        .attr('y', 40)
+        .attr('value', 'income')
+        .classed('inactive', true)
+        .text('Median Income');
 
     var povertyLabel = labelsGroup.append('text')
         .attr('x', 0)
-        .attr('y', 40)
+        .attr('y', 60)
         .attr('value', 'poverty')
         .classed('inactive', true)
-        .text('Poverty');
+        .text('Poverty (%)');
 
     // Append y-axis labels
     chartGroup.append('text')
