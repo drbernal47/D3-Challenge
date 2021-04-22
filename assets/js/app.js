@@ -30,6 +30,17 @@ var chartGroup = svg.append("g")
 
 // Initialize parameters
 
+var chosenXAxis = "healthcare";
+
+// Function for updating x-axis
+function xScale(medData, chosenXAxis) {
+    var xLinearScale = d3.scaleLinear()
+        .domain([0, d3.max(medData, d => d[chosenXAxis])])
+        .range([0, width]);
+    
+    return xLinearScale;
+};
+
 
 // Function to draw the scatterplot with given parameters
 
@@ -43,8 +54,27 @@ var chartGroup = svg.append("g")
 
 
 // Read in the data from the csv
-d3.csv("assets/data/data.csv").then(function(ourData, err) {
+d3.csv("assets/data/data.csv").then(function(medData, err) {
     if (err) throw err;
 
-    console.log(ourData);
+    console.log(medData);
+
+    // Determine axes
+    var xLinearScale = xScale(medData, chosenXAxis);
+
+    var yLinearScale = d3.scaleLinear()
+        .domain([0, d3.max(medData, d => d.poverty)])
+        .range([height, 0]);
+
+    var bottomAxis = d3.axisBottom(xLinearScale);
+    var leftAxis = d3.axisLeft(yLinearScale);
+
+    // Append axes
+    var xAxis = chartGroup.append('g')
+        .classed('x-axis', true)
+        .attr('transform', `translate(0, ${height})`)
+        .call(bottomAxis);
+
+    chartGroup.append('g')
+        .call(leftAxis);
 });
