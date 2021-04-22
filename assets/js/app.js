@@ -32,7 +32,7 @@ var chartGroup = svg.append("g")
 
 var chosenXAxis = "age";
 
-// Function for updating x-axis
+// Function for updating x-axis scale
 function xScale(medData, chosenXAxis) {
     var xLinearScale = d3.scaleLinear()
         .domain([0, d3.max(medData, d => d[chosenXAxis])])
@@ -40,6 +40,26 @@ function xScale(medData, chosenXAxis) {
     
     return xLinearScale;
 };
+
+// Function for updating x-axis var
+function renderXAxis(newXScale, xAxis) {
+    var bottomAxis = d3.axisBottom(newXScale);
+
+    xAxis.transition()
+        .duration(1000)
+        .call(bottomAxis);
+    
+        return xAxis;
+}
+
+// Function for updating circles when axes change
+function renderCircles(circlesGroup, newXScale, chosenXAxis) {
+    circlesGroup.transition()
+        .duration(1000)
+        .attr('cx', d => newXScale(d[chosenXAxis]));
+    
+    return circlesGroup;
+}
 
 
 // Read in the data from the csv
@@ -123,5 +143,42 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
         .attr('fill', 'lightblue')
         .attr('opacity', .7);
 
+    // Event Handler
+    labelsGroup.selectAll('text')
+        .on('click', function() {
+            var value = d3.select(this).attr('value');
+            if (value != chosenXAxis) {
+                chosenXAxis = value;
+
+                xLinearScale = xScale(medData, chosenXAxis);
+                xAxis = renderXAxis(xLinearScale, xAxis);
+                circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+
+                if (chosenXAxis === 'age') {
+                    ageLabel.classed('active', true)
+                        .classed('inactive', false)
+                    incomeLabel.classed('active', false)
+                        .classed('inactive', true)
+                    povertyLabel.classed('active', false)
+                        .classed('inactive', true)
+                }
+                else if (chosenXAxis === 'income') {
+                    ageLabel.classed('active', false)
+                        .classed('inactive', true)
+                    incomeLabel.classed('active', true)
+                        .classed('inactive', false)
+                    povertyLabel.classed('active', false)
+                        .classed('inactive', true)
+                }
+                else {
+                    ageLabel.classed('active', false)
+                        .classed('inactive', true)
+                    incomeLabel.classed('active', false)
+                        .classed('inactive', true)
+                    povertyLabel.classed('active', true)
+                        .classed('inactive', false)
+                }
+            }
+        })
 
 });
