@@ -108,6 +108,38 @@ function renderYCircleText(circlesText, newYScale, chosenYAxis) {
     return circlesText;
 }
 
+// Function for updating circle tooltips when x-axis changes
+function updateXToolTip(circlesGroup, chosenXAxis) {
+    var label = 'Median Age: ';
+
+    if (chosenXAxis === 'income') {
+        label = 'Median Income: ';
+    }
+    else if (chosenXAxis === 'poverty') {
+        label = 'Poverty (%): ';
+    }
+
+    var toolTip = d3.tip()
+        .attr('class', 'tooltip')
+        .offset([80, -60])
+        .html(function(d) {
+            return (`${d.state}<br>${label}${d[chosenXAxis]}`);
+        });
+
+    circlesGroup.call(toolTip);
+
+    circlesGroup.on('mouseover', function(data) {
+        toolTip.show(data, this);
+    })
+        .on('mouseout', function(data, index) {
+            toolTip.hide(data, this);
+        });
+
+    return circlesGroup;
+}
+
+
+
 
 // Read in the data from the csv
 d3.csv("assets/data/data.csv").then(function(medData, err) {
@@ -216,6 +248,8 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
         .attr('fill', 'white')
         .classed('circleText', true)
         .text(d => d.abbr);
+
+    var circlesGroup = updateXToolTip(circlesGroup, chosenXAxis);
 
     // Event Handler for x-axis
     xLabelsGroup.selectAll('text')
