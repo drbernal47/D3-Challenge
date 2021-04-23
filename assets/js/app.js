@@ -109,21 +109,29 @@ function renderYCircleText(circlesText, newYScale, chosenYAxis) {
 }
 
 // Function for updating circle tooltips when x-axis changes
-function updateXToolTip(circlesGroup, chosenXAxis) {
-    var label = 'Median Age: ';
+function updateToolTip(circlesGroup, chosenXAxis, chosenYAxis) {
+    var xLabel = 'Median Age: ';
+    var yLabel = 'Healthcare (%): ';
 
     if (chosenXAxis === 'income') {
-        label = 'Median Income: ';
+        xLabel = 'Median Income: $';
     }
     else if (chosenXAxis === 'poverty') {
-        label = 'Poverty (%): ';
+        xLabel = 'Poverty (%): ';
+    }
+
+    if (chosenYAxis === 'obesity') {
+        yLabel = 'Obesity (%): ';
+    }
+    else if (chosenYAxis === 'smokes') {
+        yLabel = 'Smokes (%): '
     }
 
     var toolTip = d3.tip()
         .attr('class', 'tooltip')
         .offset([80, -60])
         .html(function(d) {
-            return (`${d.state}<br>${label}${d[chosenXAxis]}`);
+            return (`${d.state}<br>${xLabel}${d[chosenXAxis]}<br>${yLabel}${d[chosenYAxis]}`);
         });
 
     circlesGroup.call(toolTip);
@@ -249,7 +257,7 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
         .classed('circleText', true)
         .text(d => d.abbr);
 
-    var circlesGroup = updateXToolTip(circlesGroup, chosenXAxis);
+    var circlesGroup = updateToolTip(circlesGroup, chosenXAxis, chosenYAxis);
 
     // Event Handler for x-axis
     xLabelsGroup.selectAll('text')
@@ -262,6 +270,7 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
                 xAxis = renderXAxis(xLinearScale, xAxis);
                 circlesGroup = renderXCircles(circlesGroup, xLinearScale, chosenXAxis);
                 circlesText = renderXCircleText(circlesText, xLinearScale, chosenXAxis);
+                circlesGroup = updateToolTip(circlesGroup, chosenXAxis, chosenYAxis);
 
                 if (chosenXAxis === 'age') {
                     ageLabel.classed('active', true)
@@ -301,6 +310,7 @@ d3.csv("assets/data/data.csv").then(function(medData, err) {
                 yAxis = renderYAxis(yLinearScale, yAxis);
                 circlesGroup = renderYCircles(circlesGroup, yLinearScale, chosenYAxis);
                 circlesText = renderYCircleText(circlesText, yLinearScale, chosenYAxis);
+                circlesGroup = updateToolTip(circlesGroup, chosenXAxis, chosenYAxis);
 
                 if (chosenYAxis === 'healthcare') {
                     healthcareLabel.classed('active', true)
