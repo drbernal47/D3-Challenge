@@ -35,7 +35,7 @@ var chosenYAxis = "healthcare"
 // Function for updating x-axis scale
 function xScale(medData, chosenXAxis) {
     var xLinearScale = d3.scaleLinear()
-        .domain([0, d3.max(medData, d => d[chosenXAxis])])
+        .domain([(d3.min(medData, d => d[chosenXAxis])) * 0.95, (d3.max(medData, d => d[chosenXAxis])) * 1.05])
         .range([0, width]);
     
     return xLinearScale;
@@ -55,7 +55,7 @@ function renderXAxis(newXScale, xAxis) {
 // Function for updating y-axis scale
 function yScale(medData, chosenYAxis) {
     var yLinearScale = d3.scaleLinear()
-        .domain([0, d3.max(medData, d => d[chosenYAxis])])
+        .domain([(d3.min(medData, d => d[chosenYAxis])) * 0.8, (d3.max(medData, d => d[chosenYAxis])) * 1.05])
         .range([height, 0]);
 
     return yLinearScale;
